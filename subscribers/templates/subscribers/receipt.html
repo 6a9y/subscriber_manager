@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>وصل استلام - {{ subscriber.name }}</title>
+    <style>
+        body { font-family: Tahoma, Arial, sans-serif; direction: rtl; padding: 20px; background: #fff; }
+        .receipt { max-width: 400px; margin: auto; border: 2px dashed #333; padding: 20px; border-radius: 8px; }
+        .title { text-align: center; margin-bottom: 15px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .row-title { font-weight: bold; }
+        .total { text-align: center; margin-top: 15px; font-size: 18px; font-weight: bold; color: #28a745; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #777; }
+        .btn-print { display: block; width: 100%; padding: 10px; background: #28a745; color: white; text-align: center; border: none; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        @media print { .btn-print { display: none; } }
+    </style>
+</head>
+<body>
+
+    <div class="receipt">
+        <div class="title">
+            <h2>🧾 وصل استلام اشتراك</h2>
+            <p>التاريخ: {{ today }}</p>
+        </div>
+        
+        <div class="row"><span class="row-title">اسم المشترك:</span> <span>{{ subscriber.name }}</span></div>
+        <div class="row"><span class="row-title">اسم المستخدم:</span> <span>{{ subscriber.username }}</span></div>
+        <div class="row"><span class="row-title">رقم الهاتف:</span> <span>{{ subscriber.phone }}</span></div>
+        <div class="row"><span class="row-title">الباقة:</span> <span>{{ subscriber.package }}</span></div>
+        <div class="row"><span class="row-title">تاريخ الانتهاء:</span> <span>{{ subscriber.end_date|date:"Y/m/d" }}</span></div>
+        
+        <div class="total">المبلغ المدفوع: {{ subscriber.amount }} د.ع</div>
+
+        <div class="footer">شكراً لاشتراككم معنا!</div>
+        <button class="btn-print" onclick="window.print()">🖨️ طباعة الوصل</button>
+    </div>
+
+</body>
+</html>

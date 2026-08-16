@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - إدارة المشتركين</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; padding: 20px; direction: rtl; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .btn-add { background-color: #28a745; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        .btn-list { background-color: #17a2b8; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-left: 10px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-right: 5px solid #ccc; }
+        .card.total { border-color: #17a2b8; }
+        .card.active { border-color: #28a745; }
+        .card.expired { border-color: #6c757d; }
+        .card.unpaid { border-color: #dc3545; }
+        .card.money { border-color: #28a745; }
+        .card h3 { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .card .number { font-size: 20px; font-weight: bold; }
+
+        .section-title { font-size: 18px; margin: 25px 0 15px 0; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .table-container { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; text-align: right; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #555; font-weight: 600; }
+        
+        .badge-warning { background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .empty-msg { text-align: center; color: #777; padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>📊 لوحة التحكم والإيرادات</h2>
+        <div>
+            <a href="{% url 'subscriber_list' %}" class="btn-list">👥 قائمة المشتركين</a>
+            <a href="{% url 'add_subscriber' %}" class="btn-add">➕ إضافة مشترك جديد</a>
+        </div>
+    </div>
+
+  <!-- كروت الإحصائيات مع إمكانية النقر للفلترة -->
+    <div class="stats-grid">
+        <a href="{% url 'subscriber_list' %}" style="text-decoration: none; color: inherit;">
+            <div class="card total" style="cursor: pointer;">
+                <h3>👥 إجمالي المشتركين</h3>
+                <div class="number">{{ total_subscribers }}</div>
+            </div>
+        </a>
+
+        <a href="{% url 'subscriber_list' %}?filter=active" style="text-decoration: none; color: inherit;">
+            <div class="card active" style="cursor: pointer;">
+                <h3>🟢 المشتركين الفعالين</h3>
+                <div class="number">{{ active_subscribers }}</div>
+            </div>
+        </a>
+
+        <a href="{% url 'subscriber_list' %}?filter=unpaid" style="text-decoration: none; color: inherit;">
+            <div class="card unpaid" style="cursor: pointer;">
+                <h3>🔴 غير الدافعين (الديون)</h3>
+                <div class="number">{{ unpaid_count }} شخص</div>
+            </div>
+        </a>
+
+        <a href="{% url 'subscriber_list' %}?filter=unpaid" style="text-decoration: none; color: inherit;">
+            <div class="card unpaid" style="cursor: pointer;">
+                <h3>💰 إجمالي الديون المطلوبة</h3>
+                <div class="number" style="color: #dc3545;">{{ unpaid_money }} د.ع</div>
+            </div>
+        </a>
+
+        <a href="{% url 'subscriber_list' %}?filter=paid" style="text-decoration: none; color: inherit;">
+            <div class="card money" style="cursor: pointer;">
+                <h3>💵 المقبوضات الفعليه</h3>
+                <div class="number" style="color: #28a745;">{{ paid_money }} د.ع</div>
+            </div>
+        </a>
+    </div>
+    <!-- جدول الاشتراكات القريبة من الانتهاء -->
+    <div class="section-title">⏰ اشتراكات تنتهي خلال 3 أيام</div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>المشترك</th>
+                    <th>رقم الهاتف</th>
+                    <th>تاريخ الانتهاء</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in expiring_soon %}
+                <tr>
+                    <td>{{ sub.name }}</td>
+                    <td>{{ sub.phone }}</td>
+                    <td>{{ sub.end_date|date:"Y/m/d" }}</td>
+                    <td><span class="badge-warning">ينتهي قريباً</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="empty-msg">لا توجد اشتراكات تنتهي خلال 3 أيام القادمة 👍</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
